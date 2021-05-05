@@ -1,3 +1,5 @@
+import re
+
 from Constants import t1_image_tags
 from Constants import t1_s1_image_tag, t1_s2_image_tag, t1_s3_image_tag
 from Constants import t2_image_tags
@@ -24,13 +26,13 @@ def get_test_number_image_tags(test_num):
 
 
 def get_fn_tag(fn_name):
-    if fn_name == "image-size-s1":
+    if re.search(re.compile("image-size-s1"), fn_name) is not None:
         return t1_s1_image_tag
-    if fn_name == "image-size-s2":
+    if re.search(re.compile("image-size-s2"), fn_name) is not None:
         return t1_s2_image_tag
-    if fn_name == "image-size-s3":
+    if re.search(re.compile("image-size-s3"), fn_name) is not None:
         return t1_s3_image_tag
-    if fn_name == "memory-size-m1":
+    if re.search(re.compile("memory-size-m1"), fn_name) is not None:
         return t2_m1_image_tag
 
     return "no_tag_found"

@@ -48,7 +48,7 @@ def build_and_push_docker_image(path):
 
 
 def push_to_docker(image_tag):
-    log("Pushing {} to docker registry".format(image_tag))
+    log("Pushing {} to AWS ECR registry".format(image_tag))
     return run_executable(executable_path=push_docker_image_exec_path, args=[image_tag])
 
 

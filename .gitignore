@@ -6,4 +6,5 @@ venv/*.*
 log
 logs/*
 results/*
+safekeeping/*
 .gradle

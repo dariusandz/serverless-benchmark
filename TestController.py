@@ -7,7 +7,7 @@ from logging import ERROR, DEBUG
 
 from Constants import custom_runtime_tags
 from Constants import t1_memory_size, t1_s1_image_tag, t1_s2_image_tag, t1_s3_image_tag, t1_function_name
-from Constants import t2_function_memory_sizes, t2_m1_image_tag, t2_function_name
+from Constants import t2_function_memory_sizes_1, t2_m1_image_tag, t2_function_name
 
 from LogsParser import write_response_logs
 
@@ -55,7 +55,7 @@ def repeat_fun(times, f):
 
 def test_jar_size():
     log("Running container image size tests")
-    t1_image_tags = [t1_s1_image_tag, t1_s2_image_tag, t1_s3_image_tag]
+    t1_image_tags = [t1_s1_image_tag, t1_s2_image_tag, t1_s3_image_tag]  # t1_s1_image_tag, t1_s2_image_tag,
     for image_tag in t1_image_tags:
         aws_image_uri = build_image_uri(image_tag)
         function_name = build_function_name(t1_function_name, image_tag) + str(uuid.uuid4())
@@ -67,7 +67,7 @@ def test_jar_size():
 
 def test_mem_size():
     log("Running allocated memory size tests")
-    for memory_size in t2_function_memory_sizes:
+    for memory_size in t2_function_memory_sizes_1:
         aws_image_uri = build_image_uri(t2_m1_image_tag)
         function_name = build_function_name(t2_function_name, t2_m1_image_tag) + str(uuid.uuid4())
 

@@ -1,4 +1,4 @@
-FROM amazoncorretto:11
+FROM public.ecr.aws/lambda/java:latest
 
 ENV AWS_LAMBDA_FUNCTION_MEMORY_SIZE=256
 

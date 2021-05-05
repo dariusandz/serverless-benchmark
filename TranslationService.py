@@ -12,8 +12,20 @@ dictionary = {
             "default": "Atmintis (MB)",
             "genitive_case": "atminties (MB)"
         },
+        "vcpu_for_memory": {
+            "default": 'Skiriama vCPU/s laiko (s)'
+        },
         "chart_title": {
             "default": "Funkcijos inicijavimo laiko priklausomybė nuo {}"
+        },
+        "init_duration_ms_mean": {
+            "default": "Inicijavimo laiko vidurkis (ms)",
+        },
+        "init_duration_ms_std": {
+            "default": "Inicijavimo laiko standartinis nuokrypis (ms)",
+        },
+        "available_cpus": {
+            "default": "Procesoriaus loginės gijos"
         }
     }
 }

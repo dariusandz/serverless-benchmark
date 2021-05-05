@@ -16,7 +16,67 @@ repositories {
 }
 
 dependencies {
+    implementation platform('software.amazon.awssdk:bom:2.10.73')
+    implementation platform('com.amazonaws:aws-xray-recorder-sdk-bom:2.4.0')
+
+    implementation 'software.amazon.awssdk:lambda'
     implementation 'com.amazonaws:aws-lambda-java-runtime-interface-client:1.0.0'
+    implementation 'com.amazonaws:aws-xray-recorder-sdk-core'
+    implementation 'com.amazonaws:aws-xray-recorder-sdk-aws-sdk-core'
+    implementation 'com.amazonaws:aws-xray-recorder-sdk-aws-sdk-v2'
+    implementation 'com.amazonaws:aws-xray-recorder-sdk-aws-sdk-v2-instrumentor'
+    implementation 'com.amazonaws:aws-lambda-java-core:1.2.0'
+    implementation 'com.amazonaws:aws-lambda-java-events:2.2.7'
+    implementation 'com.google.code.gson:gson:2.8.6'
+    implementation 'org.apache.logging.log4j:log4j-api:2.13.0'
+    implementation 'org.apache.logging.log4j:log4j-core:2.13.0'
+
+    compile "org.springframework.kafka:spring-kafka:2.6.7"
+
+    compile "io.springfox:springfox-swagger2:2.10.5"
+    compile "io.springfox:springfox-swagger-ui:2.10.5"
+    compile "io.springfox:springfox-bean-validators:2.10.5"
+
+    compile "com.google.guava:guava:30.1.1-jre"
+    compile "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.12.3"
+    compile "org.liquibase:liquibase-core:4.3.4"
+    compile "net.logstash.logback:logstash-logback-encoder:4.11"
+    compile "mysql:mysql-connector-java:5.1.49"
+
+    compile "org.elasticsearch.client:elasticsearch-rest-high-level-client:7.9.1"
+    compile "org.apache.commons:commons-lang3:3.0"
+    compile "org.apache.httpcomponents:httpclient:4.5.10"
+    compile "org.apache.httpcomponents:httpcore:4.4.12"
+    compile "org.apache.httpcomponents:httpasyncclient:4.1.4"
+
+    compile "com.amazonaws:aws-java-sdk:1.11.939"
+    compile "com.amazonaws:aws-java-sdk-sts:1.11.939"
+    compile "org.springframework.retry:spring-retry:1.2.2.RELEASE"
+    compile "com.nimbusds:nimbus-jose-jwt:7.9"
+
+    compile 'org.jetbrains.kotlin:kotlin-reflect:1.4.31'
+    compile 'org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.4.31'
+    compile 'org.flywaydb:flyway-core:7.8.2'
+    compile 'org.jdbi:jdbi3-core:3.6.0'
+    compile 'org.jdbi:jdbi3-kotlin:3.6.0'
+    compile 'org.jdbi:jdbi3-kotlin-sqlobject:3.6.0'
+    compile 'org.mariadb.jdbc:mariadb-java-client:2.3.0'
+    compile 'mysql:mysql-connector-java:8.0.16'
+    compile 'org.postgresql:postgresql:42.2.5'
+    compile "fr.opensagres.xdocreport:fr.opensagres.xdocreport.document.docx:2.0.2"
+    compile "fr.opensagres.xdocreport:fr.opensagres.xdocreport.template.freemarker:2.0.2"
+    compile "fr.opensagres.xdocreport:fr.opensagres.xdocreport.converter.docx.xwpf:2.0.2"
+    compile "org.apache.pdfbox:pdfbox:2.0.14"
+
+    runtimeOnly 'org.apache.logging.log4j:log4j-slf4j18-impl:2.13.0'
+    runtimeOnly 'com.amazonaws:aws-lambda-java-log4j2:1.1.0'
+
+    testCompile "com.nhaarman.mockitokotlin2:mockito-kotlin:2.1.0"
+    testCompile "io.mockk:mockk:1.9.3"
+    testCompile "org.amshove.kluent:kluent:1.56"
+    testCompile "joda-time:joda-time:2.10.5"
+    testCompile "org.codehaus.groovy:groovy:2.4.11"
+    testCompile "com.h2database:h2:1.4.200"
 }
 
 java {
