@@ -1,5 +1,7 @@
 import re
 
+from Constants import ecr_repository_name, s3_bucket_name
+
 from util.subprocess_util import run_executable
 from util.logging_util import init_logging, log
 from util.sleep_util import sleep
@@ -7,13 +9,15 @@ from util.file_util import write_to_file
 
 create_ecr_repository_exec_path = 'script/aws/environment/create-aws-ecr-repository.sh'
 create_role_exec_path = 'script/aws/environment/create-aws-lambda-role.sh'
+create_s3_bucket_exec_path = 'script/aws/environment/create-aws-s3-bucket.sh'
 assign_role_permissions_exec_path = 'script/aws/environment/assign-aws-lambda-role-permissions.sh'
 
 init_logging()
 
 
 def main():
-    image_repository = create_aws_ecr_image_repository()
+    image_repository = create_aws_ecr_image_repository(ecr_repository_name)
+    create_s3_bucket(s3_bucket_name)
     role_arn = create_aws_role()
     assign_aws_role_lambda_permissions()
     write_to_dotenv(
@@ -22,19 +26,28 @@ def main():
             "AWS_ECR_URI={}".format(extract_aws_ecr_uri(image_repository)),
             "AWS_ECR_REPOSITORY_NAME={}".format(extract_aws_ecr_repository_name(image_repository)),
             "AWS_ECR_REPOSITORY={}".format(image_repository),
-            "AWS_ROLE_ARN={}".format(role_arn)
+            "AWS_ROLE_ARN={}".format(role_arn),
+            "AWS_ROLE_ARN_ID={}".format(extract_role_id(role_arn))
         ]
     )
 
 
-def create_aws_ecr_image_repository():
+def create_aws_ecr_image_repository(repository_name):
     log("Creating AWS ecr image repository")
     repository_uri_regex = re.compile("\d{12}.\w{3}.\w{3}.\w{2}-\w*-\d.amazonaws.com/[^\"]*")
-    result = run_executable(executable_path=create_ecr_repository_exec_path)
+    result = run_executable(executable_path=create_ecr_repository_exec_path, args=[repository_name])
     if repository_uri := re.search(repository_uri_regex, result):
         repository = repository_uri.group()
         log("AWS ecr image created successfully under the name {}".format(repository))
         return repository
+
+
+def create_s3_bucket(bucket_name):
+    log("Creating S3 bucket for function storage")
+    run_executable(
+        executable_path=create_s3_bucket_exec_path,
+        args=[bucket_name]
+    )
 
 
 def create_aws_role():
@@ -87,6 +100,18 @@ def extract_aws_ecr_repository_name(image_registry_uri=""):
             return name
     except TypeError:
         log("Could not parse AWS repository name")
+
+
+def extract_role_id(role_arn=""):
+    log("Parsing AWS ecr repository name")
+    repo_arn_id_regex = re.compile("\d{12}")
+    try:
+        if role_arn_id := re.search(repo_arn_id_regex, role_arn):
+            role_id = role_arn_id.group()
+            log("Defined AWS role arn ID is {}".format(role_id))
+            return role_id
+    except TypeError:
+        log("Could not parse AWS role arn ID")
 
 
 def write_to_dotenv(env_variables):

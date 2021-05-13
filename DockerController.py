@@ -1,8 +1,10 @@
 import re
 
 from dotenv import dotenv_values
+
 from Constants import t1_s1_path, t1_s2_path, t1_s3_path
 from Constants import t2_m1_path
+
 from util.subprocess_util import run_executable
 from util.logging_util import init_logging, log
 
@@ -11,8 +13,8 @@ env_config = dotenv_values()
 AWS_DOCKER_REPO = env_config['AWS_ECR_REPOSITORY']
 
 login_aws_docker_exec_path = 'script/docker/docker-aws-login.sh'
-build_docker_image_exec_path = './script/docker/gradle-build-docker.sh'
-push_docker_image_exec_path = './script/docker/docker-push.sh'
+build_docker_image_exec_path = 'script/docker/gradle-build-docker.sh'
+push_docker_image_exec_path = 'script/docker/docker-push.sh'
 
 init_logging()
 
@@ -32,10 +34,10 @@ def aws_docker_login():
 
 def prepare_docker_images():
     log("Building testable docker images")
-    build_and_push_docker_image(t1_s1_path)
-    build_and_push_docker_image(t1_s2_path)
-    build_and_push_docker_image(t1_s3_path)
-    build_and_push_docker_image(t2_m1_path)
+    # build_and_push_docker_image(t1_s1_path)
+    # build_and_push_docker_image(t1_s2_path)
+    # build_and_push_docker_image(t1_s3_path)
+    # build_and_push_docker_image(t2_m1_path)
 
 
 def build_and_push_docker_image(path):
