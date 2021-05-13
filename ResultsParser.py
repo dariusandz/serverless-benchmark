@@ -7,12 +7,14 @@ import matplotlib.pyplot as plt
 from dotenv import dotenv_values
 from logging import ERROR
 
+from Constants import s3_bucket_name
 from Constants import logs_dir_path, results_dir_path
 
+from subprocess import CalledProcessError
 from os.path import isfile, join
 from Constants import mem_per_1vCPU
 from TranslationService import translate, genitive_case
-from util.constants_util import get_logs_root_path, get_fn_tag
+from util.constants_util import get_logs_root_path, get_fn_package_identifier
 from util.file_util import read_file, read_csv_to_dataframe, write_to_csv
 from util.subprocess_util import run_executable
 from util.logging_util import log, init_logging
@@ -22,8 +24,9 @@ env_config = dotenv_values()
 REPOSITORY_NAME = env_config["AWS_ECR_REPOSITORY_NAME"]
 
 describe_image_exec_path = './script/aws/environment/describe-image.sh'
+describe_s3_object_exec_path = './script/aws/environment/describe-s3-object.sh'
 
-results_header = ["image_size_mb", "memory_size_mb", "init_duration_ms", "artificial_init_duration", "duration", "available_threads"]
+results_header = ["function_code_package_size_mb", "memory_size_mb", "init_duration_ms", "artificial_init_duration", "duration_ms", "billed_duration_ms", "wait_for_response_durations_ms", "layer_configuration_duration_ms", "available_threads"]
 
 init_logging()
 
@@ -48,18 +51,21 @@ def parse_logs(test_num):
         fn_name = log_dir
         fn_logs_dir = logs_dir + fn_name
 
-        image_size_mb = get_fn_image_size(fn_name)
+        fn_package_size = get_fn_package_size_mb(fn_name)
         csv_results = []
         for log_file in os.listdir(fn_logs_dir):
             log(f'Parsing logs file {log_file} in dir {fn_logs_dir}')
             fn_log = read_file(fn_logs_dir + '/' + log_file)
 
             csv_results.append([
-                image_size_mb,
+                fn_package_size,
                 get_memory_size(fn_log),
                 get_init_duration(fn_log),
                 get_artificial_init_duration(fn_log),
                 get_duration(fn_log),
+                get_billed_duration(fn_log),
+                get_wait_for_response_duration(fn_log),
+                get_layer_configuration_duration(fn_log),
                 get_available_threads(fn_log)
             ])
 
@@ -100,6 +106,17 @@ def get_init_duration(fn_log):
     return 0
 
 
+def get_billed_duration(fn_log):
+    billed_duration_regex = re.compile("Billed Duration: \d*.\d*")
+    try:
+        if billed_duration := re.search(billed_duration_regex, fn_log):
+            return float(billed_duration.group().replace("Billed Duration: ", "").strip())
+    except TypeError:
+        log("Could not parse Billed Duration from lambda invocation log", ERROR)
+
+    return 0
+
+
 def get_artificial_init_duration(fn_log):
     billed_duration_regex = re.compile("Artificial initialization duration took: \d*.\d*")
     try:
@@ -122,29 +139,66 @@ def get_available_threads(fn_log):
     return 1
 
 
-def get_fn_image_size(fn_name):
-    fn_tag = get_fn_tag(fn_name)
-    image_details = run_executable(
-        executable_path=describe_image_exec_path,
-        args=[REPOSITORY_NAME, fn_tag]
-    )
-
-    image_byte_size_regex = re.compile("\"imageSizeInBytes\": \\d*")
+def get_fn_package_size_mb(fn_name):
+    fn_package_identifier = get_fn_package_identifier(fn_name)
     try:
+        image_details = run_executable(
+            executable_path=describe_image_exec_path,
+            args=[REPOSITORY_NAME, fn_package_identifier]
+        )
+        image_byte_size_regex = re.compile("\"imageSizeInBytes\": \\d*")
         if image_byte_size := re.search(image_byte_size_regex, image_details):
             image_bytes = int(image_byte_size.group().replace("\"imageSizeInBytes\": ", ""))
             return round(image_bytes / 1000 / 1000, 2)
     except TypeError:
         log("Could not get function image size. This might be because provided image name is wrong", ERROR)
+    except CalledProcessError:
+        log("Function is not deployed as image")
+
+    try:
+        s3_object_details = run_executable(
+            executable_path=describe_s3_object_exec_path,
+            args=[s3_bucket_name, fn_package_identifier]
+        )
+        s3_object_byte_size_regex = re.compile("\"ContentLength\": \\d*")
+        if s3_object_bytes := re.search(s3_object_byte_size_regex, s3_object_details):
+            package_bytes = int(s3_object_bytes.group().replace("\"ContentLength\": ", ""))
+            return round(package_bytes / 1000 / 1000, 2)
+    except TypeError:
+        log("Could not get function zip package size. This might be because provided zip name is wrong", ERROR)
+
+    return 0
+
+
+def get_wait_for_response_duration(fn_log):
+    wait_for_response_regex = re.compile("Wait for response duration: \d*.\d*")
+    try:
+        if wait_response_duration := re.search(wait_for_response_regex, fn_log):
+            return float(wait_response_duration.group().replace("Wait for response duration: ", "").strip())
+    except TypeError:
+        log("Could not parse Available threads from lambda invocation log", ERROR)
+
+    return 0
+
+
+def get_layer_configuration_duration(fn_log):
+    layer_configration_duration_regex = re.compile("Layer attachment duration: \d*.\d*")
+    try:
+        if layer_configuration_duration := re.search(layer_configration_duration_regex, fn_log):
+            return float(layer_configuration_duration.group().replace("Layer attachment duration: ", "").strip())
+    except TypeError:
+        log("Could not parse Available threads from lambda invocation log", ERROR)
 
     return 0
 
 
 def write_average_init_duration(test_num, results_path):
     if test_num == 't1':
-        plot_by('image_size_mb', results_path, test_num)
+        plot_by('function_code_package_size_mb', results_path, test_num)
     if test_num == 't2':
         plot_by('memory_size_mb', results_path, test_num)
+    if test_num == 't3':
+        plot_by('function_code_package_size_mb', results_path, test_num)
 
 
 def plot_by(by, results_path, test_num):
@@ -203,7 +257,7 @@ def plot(df, xlabel, test_num):
 
 def plot_scatter_with_bars(axes, group, xlabel, test_num):
     plot_scatter(axes, group, xlabel)
-    plot_quantiles_bar(axes, group, xlabel, test_num, 0.30, 0.70)
+    # plot_quantiles_bar(axes, group, xlabel, test_num, 0.30, 0.70)
 
 
 def plot_scatter(axes, group, xlabel):

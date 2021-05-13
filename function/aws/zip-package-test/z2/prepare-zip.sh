@@ -1,6 +1,6 @@
 #!/bin/bash
 
-gradle build
+gradle buildZip
 
 cd build ; mkdir distributions ; cd ..
 

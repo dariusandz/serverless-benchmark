@@ -44,7 +44,7 @@ t2_m1_path = 'function/aws/mem-size-test/base'
 t2_image_tags = [t2_m1_image_tag]
 
 # Zip package test constants
-t3_memory_size = 1024
+t3_memory_size = 4096
 
 t3_z1_tag = 'z1'
 t3_z2_tag = 'z2'
@@ -60,4 +60,5 @@ t3_z3_runtime_layer_name = 'lambda-runtime'
 
 # Helper constants
 custom_runtime_tags = [t1_s1_image_tag, t1_s2_image_tag, t2_m1_image_tag]
-providable_runtime_layer_tags = [t3_z2_tag, t3_z3_tag]
+providable_runtime_tags = [t3_z2_tag, t3_z3_tag]
+attachable_runtime_layer_tags = [t3_z3_tag]

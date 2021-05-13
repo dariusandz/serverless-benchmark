@@ -4,9 +4,9 @@ dictionary = {
             "default": "Inicijavimo laikas (ms)",
             "genitive_case": "inicijavimo laiko (ms)"
         },
-        "image_size_mb": {
-            "default": "Atvaizdo dydis (MB)",
-            "genitive_case": "atvaizdo dydžio (MB)"
+        "function_code_package_size_mb": {
+            "default": "Kodo paketo dydis (MB)",
+            "genitive_case": "kodo paketo dydžio (MB)"
         },
         "memory_size_mb": {
             "default": "Atmintis (MB)",

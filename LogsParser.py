@@ -11,8 +11,9 @@ from util.base64_util import decode_base64
 from util.logging_util import log
 
 
-def write_response_logs(fn_name, invocation_response, test_num):
+def write_response_logs(fn_name, invocation_response, test_num, additional_logs):
     log_str = parse_response_logs(fn_name, invocation_response)
+    log_str = append_additional_logs(log_str, additional_logs)
     if not is_cold_started(log_str):
         return
 
@@ -52,3 +53,9 @@ def is_cold_started(log_str):
             return False
     except TypeError:
         return False
+
+
+def append_additional_logs(log_str, additional_logs):
+    for a_log in additional_logs:
+        log_str += str(a_log) + '\n'
+    return log_str
