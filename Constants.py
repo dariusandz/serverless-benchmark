@@ -13,11 +13,13 @@ mem_per_1vCPU = 1769
 t1_logs_dir = 'image-size-logs/'
 t2_logs_dir = 'mem-size-logs/'
 t3_logs_dir = 'zip-package-logs/'
+t4_logs_dir = 'minimal-docker-image-logs/'
 
 # Function name constants
 t1_function_name = 'image-size'
 t2_function_name = 'memory-size'
 t3_function_name = 'zip-package'
+t4_function_name = 'minimal-docker-image'
 
 # Jar Size test constants
 t1_memory_size = 4096
@@ -50,13 +52,24 @@ t3_z1_tag = 'z1'
 t3_z2_tag = 'z2'
 t3_z3_tag = 'z3'
 
-t3_z1_path = f'function/aws/zip-package-test/{t3_z1_tag}'
-t3_z2_path = f'function/aws/zip-package-test/{t3_z2_tag}'
-t3_z3_path = f'function/aws/zip-package-test/{t3_z3_tag}'
+t3_z1_path = f'function/aws/zip-package-test/{t3_z1_tag}'  # AWS native runtime
+t3_z2_path = f'function/aws/zip-package-test/{t3_z2_tag}'  # bundled jlink runtime
+t3_z3_path = f'function/aws/zip-package-test/{t3_z3_tag}'  # layered jlink runtime
 t3_z3_path_function = f'function/aws/zip-package-test/{t3_z3_tag}/function'
 t3_z3_path_runtime = f'function/aws/zip-package-test/{t3_z3_tag}/runtime'
 
 t3_z3_runtime_layer_name = 'lambda-runtime'
+
+# Minimal docker image size test constants
+t4_memory_size = 4096
+
+t4_p1_image_tag = 'p1'  # Defined in build.gradle | amazoncorretto:11-alpine 195 MB
+t4_p2_image_tag = 'p2'  # Defined in build.gradle | native image 34 MB
+t4_p3_image_tag = 'p3'  # Defined in build.gradle | jlinked runtime 20 MB
+
+t4_p1_path = f'function/aws/minimal-docker-image-test/{t4_p1_image_tag}'
+t4_p2_path = f'function/aws/minimal-docker-image-test/{t4_p2_image_tag}'
+t4_p3_path = f'function/aws/minimal-docker-image-test/{t4_p3_image_tag}'
 
 # Helper constants
 custom_runtime_tags = [t1_s1_image_tag, t1_s2_image_tag, t2_m1_image_tag]

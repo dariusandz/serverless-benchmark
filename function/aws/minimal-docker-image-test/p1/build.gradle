@@ -1,0 +1,54 @@
+plugins {
+    id 'java'
+    id 'com.bmuschko.docker-remote-api' version '6.7.0'
+}
+
+import com.bmuschko.gradle.docker.tasks.image.DockerBuildImage
+
+ext {
+    repo = "dariusandz/serverless-benchmark"
+    tag = "p1"
+}
+
+repositories {
+    mavenCentral()
+    gradlePluginPortal()
+}
+
+dependencies {
+    compile 'org.postgresql:postgresql:42.2.5'
+    compile "fr.opensagres.xdocreport:fr.opensagres.xdocreport.document.docx:2.0.2"
+    compile "fr.opensagres.xdocreport:fr.opensagres.xdocreport.template.freemarker:2.0.2"
+    compile "fr.opensagres.xdocreport:fr.opensagres.xdocreport.converter.docx.xwpf:2.0.2"
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
+}
+
+jar {
+    manifest {
+        attributes(
+                'Class-Path': configurations.runtimeClasspath.files.collect {
+                    it.getName()
+                }.join(' '),
+                'Main-Class': 'serverless.benchmark.runtime.LambdaBootstrap'
+        )
+
+    }
+}
+
+task copyRuntimeDependencies(type: Copy) {
+    from configurations.runtimeClasspath
+    into 'build/dependency'
+}
+
+task buildDocker(type: DockerBuildImage, dependsOn: ['jar', 'check', 'build']) {
+    if (project.hasProperty("docker-repo")) {
+        repo = project.getProperty("docker-repo")
+    }
+    images = ["${repo}:${tag}"]
+    inputDir = buildDir.parentFile
+}
+

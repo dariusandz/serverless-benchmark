@@ -8,9 +8,10 @@ from logging import ERROR, DEBUG
 
 from Constants import s3_bucket_name
 from Constants import custom_runtime_tags, providable_runtime_tags, attachable_runtime_layer_tags
-from Constants import t1_memory_size, t1_s1_image_tag, t1_s2_image_tag, t1_s3_image_tag, t1_function_name
+from Constants import t4_memory_size, t1_memory_size, t1_s1_image_tag, t1_s2_image_tag, t1_s3_image_tag, t1_function_name
 from Constants import t2_function_memory_sizes_1, t2_m1_image_tag, t2_function_name
 from Constants import t3_memory_size, t3_z1_tag, t3_z2_tag, t3_z3_tag, t3_z3_path_runtime, t3_function_name, t3_z3_runtime_layer_name
+from Constants import t4_p1_image_tag, t4_p2_image_tag, t4_p3_image_tag, t4_function_name
 
 from LogsParser import write_response_logs
 
@@ -59,6 +60,9 @@ def main():
     if test_num == "t3":
         repeat_fun(num_invocations, test_zip_packaging)
 
+    if test_num == "t4":
+        repeat_fun(num_invocations, test_minimal_docker_image)
+
 
 def repeat_fun(times, f):
     for i in range(times):
@@ -91,12 +95,24 @@ def test_mem_size():
 
 def test_zip_packaging():
     log("Running zip package tests")
-    t3_tags = [t3_z2_tag]
+    t3_tags = [t3_z1_tag, t3_z2_tag, t3_z3_tag]
     for zip_tag in t3_tags:
         function_name = build_function_name(t3_function_name, zip_tag + str(uuid.uuid4()))
 
         run_zip_package_test_steps(
             "t3", function_name, t3_memory_size, get_zip_fn_path(zip_tag), zip_tag
+        )
+
+
+def test_minimal_docker_image():
+    log("Running minimal docker image size tests")
+    t4_image_tags = [t4_p1_image_tag, t4_p2_image_tag, t4_p3_image_tag]
+    for image_tag in t4_image_tags:
+        aws_image_uri = build_image_uri(image_tag)
+        function_name = build_function_name(t4_function_name, image_tag) + str(uuid.uuid4())
+
+        run_docker_image_test_steps(
+            "t4", function_name, t4_memory_size, image_tag, aws_image_uri
         )
 
 

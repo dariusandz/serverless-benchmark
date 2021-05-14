@@ -16,12 +16,17 @@ public class Handler implements RequestHandler<Map<String, String>, String> {
 
     long artificialInitDuration;
 
+/*
     public Handler() {
-//        Instant initStart = Instant.now();
-//        primeNumbersBruteForce(100000);
-//        Instant initEnd = Instant.now();
-//        artificialInitDuration = Duration.between(initStart, initEnd).toMillis();
+       Code initialization before function handler invocation does not count toward Billed Duration
+       when using native AWS runtime (tested with java11)
+
+       Instant initStart = Instant.now();
+       primeNumbersBruteForce(100000);
+       Instant initEnd = Instant.now();
+       artificialInitDuration = Duration.between(initStart, initEnd).toMillis();
     }
+*/
 
     @Override
     public String handleRequest(Map<String, String> input, Context context) {
@@ -45,6 +50,7 @@ public class Handler implements RequestHandler<Map<String, String>, String> {
         }
         return primeNumbers;
     }
+
     public static boolean isPrimeBruteForce(int number) {
         for (int i = 2; i < number; i++) {
             if (number % i == 0) {

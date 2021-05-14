@@ -1,0 +1,54 @@
+plugins {
+    id 'java'
+    id 'com.bmuschko.docker-remote-api' version '6.7.0'
+}
+
+import com.bmuschko.gradle.docker.tasks.image.DockerBuildImage
+
+ext {
+    repo = "dariusandz/serverless-benchmark"
+    tag = "p2"
+}
+
+repositories {
+    mavenCentral()
+    gradlePluginPortal()
+}
+
+dependencies {
+    // These dependencies are used to inflate docker image size to match other testable images
+    // Comment them out to have minimal docker image size
+    compile "com.amazonaws:aws-java-sdk:1.11.939"
+    compile "com.amazonaws:aws-java-sdk-sts:1.11.939"
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
+}
+
+jar {
+    manifest {
+        attributes(
+                'Class-Path': configurations.runtimeClasspath.files.collect {
+                    it.getName()
+                }.join(' '),
+                'Main-Class': 'serverless.benchmark.runtime.LambdaBootstrap'
+        )
+
+    }
+}
+
+task copyRuntimeDependencies(type: Copy) {
+    from configurations.runtimeClasspath
+    into 'build/dependency'
+}
+
+task buildDocker(type: DockerBuildImage, dependsOn: ['jar', 'copyRuntimeDependencies', 'check', 'build']) {
+    if (project.hasProperty("docker-repo")) {
+        repo = project.getProperty("docker-repo")
+    }
+    images = ["${repo}:${tag}"]
+    inputDir = buildDir.parentFile
+}
+

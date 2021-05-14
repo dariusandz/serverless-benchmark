@@ -1,0 +1,60 @@
+plugins {
+    id 'java'
+    id 'com.bmuschko.docker-remote-api' version '6.7.0'
+}
+
+import com.bmuschko.gradle.docker.tasks.image.DockerBuildImage
+
+ext {
+    repo = "dariusandz/serverless-benchmark"
+    tag = "p3"
+}
+
+repositories {
+    mavenCentral()
+    gradlePluginPortal()
+}
+
+dependencies {
+    // These dependencies are used to inflate docker image size to match other testable images
+    // Comment them out to have minimal docker image size
+    compile "com.amazonaws:aws-java-sdk:1.11.939"
+    compile "com.amazonaws:aws-java-sdk-sts:1.11.939"
+    compile 'org.flywaydb:flyway-core:7.8.2'
+    compile 'org.jdbi:jdbi3-core:3.6.0'
+    compile 'org.jdbi:jdbi3-kotlin:3.6.0'
+    compile 'org.jdbi:jdbi3-kotlin-sqlobject:3.6.0'
+    compile 'org.mariadb.jdbc:mariadb-java-client:2.3.0'
+    compile 'mysql:mysql-connector-java:8.0.16'
+    compile "org.apache.pdfbox:pdfbox:2.0.14"
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
+}
+
+jar {
+    manifest {
+        attributes(
+                'Class-Path': configurations.runtimeClasspath.files.collect {
+                    it.getName()
+                }.join(' '),
+                'Main-Class': 'serverless.benchmark.runtime.LambdaBootstrap'
+        )
+    }
+}
+
+task copyRuntimeDependencies(type: Copy) {
+    from configurations.runtimeClasspath
+    into 'build/dependency'
+}
+
+task buildDocker(type: DockerBuildImage, dependsOn: ['jar', 'check', 'build']) {
+    if (project.hasProperty("docker-repo")) {
+        repo = project.getProperty("docker-repo")
+    }
+    images = ["${repo}:${tag}"]
+    inputDir = buildDir.parentFile
+}
+

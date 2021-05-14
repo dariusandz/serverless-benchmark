@@ -1,0 +1,21 @@
+Manifest-Version: 1.0
+Class-Path: lambda-2.10.73.jar aws-lambda-java-runtime-interface-client-
+ 1.0.0.jar aws-lambda-java-log4j2-1.1.0.jar aws-lambda-java-core-1.2.0.j
+ ar aws-lambda-java-events-2.2.7.jar log4j-slf4j18-impl-2.13.0.jar aws-j
+ son-protocol-2.10.73.jar protocol-core-2.10.73.jar aws-core-2.10.73.jar
+  auth-2.10.73.jar regions-2.10.73.jar sdk-core-2.10.73.jar apache-clien
+ t-2.10.73.jar netty-nio-client-2.10.73.jar http-client-spi-2.10.73.jar 
+ profiles-2.10.73.jar utils-2.10.73.jar annotations-2.10.73.jar aws-lamb
+ da-java-serialization-1.0.0.jar joda-time-2.6.jar slf4j-api-1.8.0-alpha
+ 2.jar log4j-core-2.13.0.jar log4j-api-2.13.0.jar jackson-databind-2.10.
+ 0.jar jackson-core-2.10.0.jar netty-reactive-streams-http-2.0.4.jar net
+ ty-reactive-streams-2.0.4.jar reactive-streams-1.0.3.jar eventstream-1.
+ 0.1.jar jackson-annotations-2.10.0.jar httpclient-4.5.9.jar httpcore-4.
+ 4.11.jar netty-codec-http2-4.1.42.Final.jar netty-codec-http-4.1.43.Fin
+ al.jar netty-handler-4.1.43.Final.jar netty-codec-4.1.43.Final.jar nett
+ y-transport-native-epoll-4.1.42.Final-linux-x86_64.jar netty-transport-
+ native-unix-common-4.1.42.Final.jar netty-transport-4.1.43.Final.jar ne
+ tty-buffer-4.1.43.Final.jar netty-resolver-4.1.43.Final.jar netty-commo
+ n-4.1.43.Final.jar commons-logging-1.2.jar commons-codec-1.11.jar serve
+ rless-benchmark.jar
+

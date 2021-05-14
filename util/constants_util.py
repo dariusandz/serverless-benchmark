@@ -4,9 +4,10 @@ from Constants import t1_image_tags
 from Constants import t1_s1_image_tag, t1_s2_image_tag, t1_s3_image_tag
 from Constants import t2_image_tags
 from Constants import t2_m1_image_tag
-from Constants import t3_z1_tag, t3_z2_tag, t3_z3_tag, t3_function_name
+from Constants import t3_z1_tag, t3_z2_tag, t3_z3_tag
+from Constants import t4_p1_image_tag, t4_p2_image_tag, t4_p3_image_tag
 from Constants import t3_z1_path, t3_z2_path, t3_z3_path_function
-from Constants import t1_logs_dir, t2_logs_dir, t3_logs_dir
+from Constants import t1_logs_dir, t2_logs_dir, t3_logs_dir, t4_logs_dir
 
 
 def get_logs_root_path(test_num):
@@ -16,6 +17,8 @@ def get_logs_root_path(test_num):
         return t2_logs_dir
     elif test_num == "t3":
         return t3_logs_dir
+    elif test_num == "t4":
+        return t4_logs_dir
 
     return "undefined-test-num-logs"
 
@@ -45,6 +48,12 @@ def get_fn_package_identifier(fn_name):
         return t3_z2_tag
     if re.search(re.compile("zip-package-z3"), fn_name) is not None:
         return t3_z3_tag
+    if re.search(re.compile("minimal-docker-image-p1"), fn_name) is not None:
+        return t4_p1_image_tag
+    if re.search(re.compile("minimal-docker-image-p2"), fn_name) is not None:
+        return t4_p2_image_tag
+    if re.search(re.compile("minimal-docker-image-p3"), fn_name) is not None:
+        return t4_p3_image_tag
 
     return "no_tag_found"
 

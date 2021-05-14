@@ -4,6 +4,7 @@ from dotenv import dotenv_values
 
 from Constants import t1_s1_path, t1_s2_path, t1_s3_path
 from Constants import t2_m1_path
+from Constants import t4_p1_path, t4_p2_path, t4_p3_path
 
 from util.subprocess_util import run_executable
 from util.logging_util import init_logging, log
@@ -38,6 +39,9 @@ def prepare_docker_images():
     # build_and_push_docker_image(t1_s2_path)
     # build_and_push_docker_image(t1_s3_path)
     # build_and_push_docker_image(t2_m1_path)
+    build_and_push_docker_image(t4_p1_path)
+    build_and_push_docker_image(t4_p2_path)
+    build_and_push_docker_image(t4_p3_path)
 
 
 def build_and_push_docker_image(path):

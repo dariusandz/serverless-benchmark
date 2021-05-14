@@ -163,7 +163,7 @@ def get_fn_package_size_mb(fn_name):
         s3_object_byte_size_regex = re.compile("\"ContentLength\": \\d*")
         if s3_object_bytes := re.search(s3_object_byte_size_regex, s3_object_details):
             package_bytes = int(s3_object_bytes.group().replace("\"ContentLength\": ", ""))
-            return round(package_bytes / 1000 / 1000, 2)
+            return round(package_bytes / 1024 / 1024, 2)
     except TypeError:
         log("Could not get function zip package size. This might be because provided zip name is wrong", ERROR)
 
@@ -199,6 +199,8 @@ def write_average_init_duration(test_num, results_path):
         plot_by('memory_size_mb', results_path, test_num)
     if test_num == 't3':
         plot_by('function_code_package_size_mb', results_path, test_num)
+    if test_num == "t4":
+        plot_by('function_code_package_size_mb', results_path, test_num)
 
 
 def plot_by(by, results_path, test_num):
@@ -220,12 +222,12 @@ def plot(df, xlabel, test_num):
     lower_quantile_bound = .05
     upper_quantile_bound = .95
     for name, group in df:
-        if test_num == "t2":
-            lower_artificial_init_quantile = group.artificial_init_duration.quantile(lower_quantile_bound)
-            upper_artificial_init_quantile = group.artificial_init_duration.quantile(upper_quantile_bound)
+        # if test_num == "t2":
+        #     lower_artificial_init_quantile = group.artificial_init_duration.quantile(lower_quantile_bound)
+        #     upper_artificial_init_quantile = group.artificial_init_duration.quantile(upper_quantile_bound)
 
-            group = group[(group.artificial_init_duration > 0)]
-            group = group[(group.artificial_init_duration >= lower_artificial_init_quantile) & (group.artificial_init_duration <= upper_artificial_init_quantile)]
+            # group = group[(group.artificial_init_duration > 0)]
+            # group = group[(group.artificial_init_duration >= lower_artificial_init_quantile) & (group.artificial_init_duration <= upper_artificial_init_quantile)]
 
         lower_init_duration_quantile = group.init_duration_ms.quantile(lower_quantile_bound)
         upper_init_duration_quantile = group.init_duration_ms.quantile(upper_quantile_bound)
@@ -247,24 +249,24 @@ def plot(df, xlabel, test_num):
     title = translate('chart_title', genitive_case(xlabel))
     ax.set_title(title)
     ax.set_xlabel(translate(xlabel))
-    ax.set_ylabel(translate('init_duration_ms_mean'))
+    ax.set_ylabel(translate('init_duration_ms'))
     ax.legend()
 
     x_keys = list(df.indices.keys())
-    plt.xticks(x_keys, x_keys, rotation='vertical')
+    plt.xticks(x_keys, x_keys) # , rotation='vertical'
     plt.show()
 
 
 def plot_scatter_with_bars(axes, group, xlabel, test_num):
     plot_scatter(axes, group, xlabel)
-    # plot_quantiles_bar(axes, group, xlabel, test_num, 0.30, 0.70)
+    plot_quantiles_bar(axes, group, xlabel, test_num, 0.30, 0.70)
 
 
 def plot_scatter(axes, group, xlabel):
     axes.grid(zorder=0)
     axes.plot(
         getattr(group, xlabel),
-        group.init_duration_ms,
+        group.init_duration_ms, #group.wait_for_response_durations_ms + group.layer_configuration_duration_ms,
         marker='o',
         linestyle='',
         zorder=3,
@@ -280,7 +282,7 @@ def plot_quantiles_bar(axes, group, xlabel, test_num, lower_quantile, upper_quan
     bar_spacing_x = 40 if test_num == "t2" else 10
     bar_width = 40 if test_num == "t2" else 10
     axes.bar(
-        x=getattr(group, xlabel) + bar_spacing_x,
+        x=getattr(group, xlabel) - bar_spacing_x,
         width=bar_width,
         height=upper_quantile_value - lower_quantile_value,
         bottom=lower_quantile_value,
@@ -298,8 +300,8 @@ def plot_quantiles_bar(axes, group, xlabel, test_num, lower_quantile, upper_quan
     # Quantile values
     bar_label_spacing_x = 40 if test_num == "t2" else 10
     bar_label_spacing_y = 80 if test_num == "t2" else 50
-    axes.text(group_x_value + bar_spacing_x + bar_label_spacing_x, lower_quantile_value - bar_label_spacing_y, lower_quantile_value, **style, ha='left')
-    axes.text(group_x_value + bar_spacing_x + bar_label_spacing_x, upper_quantile_value + bar_label_spacing_y, upper_quantile_value, **style, ha='left')
+    axes.text(group_x_value - bar_spacing_x - bar_label_spacing_x, lower_quantile_value - bar_label_spacing_y, lower_quantile_value, **style, ha='left')
+    axes.text(group_x_value - bar_spacing_x - bar_label_spacing_x, upper_quantile_value + bar_label_spacing_y, upper_quantile_value, **style, ha='left')
 
 
 def plot_std_line(axes, df):
